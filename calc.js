@@ -1,19 +1,3 @@
-// вытянуть все значения из html-элементов
-//id на всех активных элементах
-// написать функцию getData
-//получить элемент по id и сохранить данные в переменную
-//всем кнопкам дать слушать события
-//написать функции для каждой группы кнопок
-//написать функцию подсчета данных
-//написать функцию вывода данных в html
-// добавить валидацию данных
-//перезаписать массивы данных в объекты
-/*
-Что нужно реализовать:
-1.При выборе производителя кнопка должна оставаться подсвеченной
-2.При выборе типа секции(Глухая,поворотная и тд.) должно автоматом подсвечиваться нужное окно(нужно ли менять верстку?)
- */
-
 const windowObject = {
     one: {
         default: {
@@ -382,12 +366,13 @@ const windowObject = {
         this.data.output.outputValue = document.getElementById('output')
         this.data.output.outputMoscowValue = document.getElementById('output-moscow')
     },
-    totalCoeff() {
+    getCoeff() {
         this.data.output.b = this.coeffs[this.data.output.k][this.data.type.typeProfileValue];
         this.data.output.totalCoeff = this.data.output.b * this.data.output.k;
+        return this.data.output.totalCoeff;
 
     },
-    validPrice() {
+    getPrice() {
         if (this.data.key.windowCountKey === 'one') {
             this.data.key.windowTypeKey = this.data.key.windowTypeKey1;
             this.data.output.checkWidth = Number(this.data.key.widthKey);
@@ -462,6 +447,8 @@ const windowObject = {
         }
         this.data.output.result = this[this.data.key.windowCountKey][this.data.key.windowTypeKey]
             [this.data.key.widthKey][this.data.key.heightKey];
+
+        return this.data.output.result;
     },
     renderResult() {
         this.data.output.totalResult = Math.round(this.data.output.totalCoeff * this.data.output.result);
@@ -493,28 +480,49 @@ const windowObject = {
     }
 
 };
-document.addEventListener("DOMContentLoaded", init);
-windowObject.data.brands.brand.addEventListener("click", totalCoeff);
-document.addEventListener('click', validPrice);
-document.addEventListener('click', renderResult);
+document.addEventListener("DOMContentLoaded", ()=>{
+    init();
+    configPrice();
+});
+let coeff = document.querySelector('.brand');
+let checkWindowsCount = document.querySelector('.count-windows');
+coeff.addEventListener("click", (evt) => {
+    let target = evt.target;
+    if (target.tagName !== "BUTTON") {
+        return;
+    }
+    getCoeff();
+});
+checkWindowsCount.addEventListener('click', (evt) => {
+    let target = evt.target;
+    if (target.tagName !== "BUTTON") {
+        return;
+    }
+    getPrice();
+});
 
 function init() {
     windowObject.init();
 }
 
-function totalCoeff() {
-    windowObject.totalCoeff();
+function getCoeff() {
+    windowObject.getCoeff();
+
+    if(windowObject.getCoeff() >= 0) {
+        renderResult();
+    }
 }
 
-function validPrice() {
-    windowObject.validPrice();
+function getPrice() {
+    windowObject.getPrice();
+    if (windowObject.getPrice() >= 0) {
+        renderResult();
+    }
 }
 function  renderResult() {
     windowObject.renderResult();
 }
 
-
-document.addEventListener("DOMContentLoaded", configPrice);
 
 
 //___Функции___//
